@@ -14,7 +14,12 @@ import { ChatSearchbar } from './sidebar_comps/ChatSearchbar';
 import { ChatTitleList } from './sidebar_comps/ChatTitleList';
 import { SidebarMenuButton } from './sidebar_comps/SidebarMenuButton';
 
-const Sidebar = ({ sidebarVisible = true, setSidebarVisible = () => { } }) => {
+interface SidebarProps {
+    sidebarVisible: boolean;
+    setSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ sidebarVisible = true, setSidebarVisible = () => { } }) => {
     return (
         <>
             <div className="sidebar">

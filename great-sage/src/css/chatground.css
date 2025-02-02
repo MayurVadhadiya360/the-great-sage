@@ -1,6 +1,38 @@
+/* ChatGround */
+.chat-ground-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.chat-ground {
+    max-width: 50rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px ;
+    height: 90%;
+}
+
+.chat-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
+    padding: 0 ;
+}
+
+@media screen and (max-width: 700px) {
+    /* .chat-ground {
+        max-width: 50rem;
+    } */
+}
+
+
 /* UserMessage */
 .chat-input-container {
-    margin-bottom: 2rem;
     background-color: #3F3F3F;
     display: flex;
     flex-direction: row;
@@ -14,29 +46,12 @@
     flex: 1;
     background-color: transparent;
     color: white;
-    font-size: 24px;
+    font-size: 16px;
     border: none;
     padding: 0.5rem;
     margin: 0.5rem;
     outline: none;
     resize: none;
-}
-
-.user-message::-webkit-scrollbar {
-    width: auto;
-}
-
-.user-message::-webkit-scrollbar-track {
-    background: rgb(33, 33, 33);
-}
-
-.user-message::-webkit-scrollbar-thumb {
-    background: #666;
-}
-
-.user-message::-webkit-scrollbar-thumb:hover {
-    background: #888;
-    cursor: default;
 }
 
 .send-button {
