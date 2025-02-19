@@ -16,20 +16,8 @@ const SidebarMenuButton: React.FC<SidebarMenuButtonProps> = ({
     onClick = () => { },
 }) => {
     return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '45px',
-                backgroundColor: '#3F3F3F',
-                borderRadius: '10px',
-                padding: '0 .4rem',
-                gap: '.5rem',
-                cursor: 'pointer',
-            }}
-            onClick={onClick}
-        >
-            {prefixIcon && <img src={prefixIcon} alt="prefix-icon" />}
+        <div className='sidebar-menu-button' onClick={onClick}>
+            {prefixIcon && <img src={prefixIcon} alt="prefix-icon" height='40px' width='40px' />}
             <span style={{ flex: 1, fontSize: '24px', color: textColor }}>
                 {text}
             </span>
@@ -38,4 +26,4 @@ const SidebarMenuButton: React.FC<SidebarMenuButtonProps> = ({
     );
 };
 
-export { SidebarMenuButton };
+export default SidebarMenuButton;

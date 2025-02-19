@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChatTitleListItem } from './ChatTitleListItem';
+import ChatTitleListItem from './ChatTitleListItem';
 
 interface ChatItem {
     chatId: number;
@@ -19,7 +19,7 @@ const ChatTitleList: React.FC = () => {
         { chatId: 9, chatTitle: 'Chat 9' },
         { chatId: 10, chatTitle: 'Chat 10' },
         { chatId: 11, chatTitle: 'Chat 11' },
-        { chatId: 12, chatTitle: 'Chat 12' },
+        { chatId: 12, chatTitle: 'Chat 12 long long title' },
         { chatId: 13, chatTitle: 'Chat 13' },
         { chatId: 14, chatTitle: 'Chat 14' },
         { chatId: 15, chatTitle: 'Chat 15' },
@@ -53,10 +53,11 @@ const ChatTitleList: React.FC = () => {
                     active={chat.chatId === currentChatId}
                     updateChatTitle={updateChatTitle}
                     deleteChat={deleteChat}
+                    onClick={() => setCurrentChatId(chat.chatId)}
                 />
             ))}
         </div>
     );
 };
 
-export { ChatTitleList };
+export default ChatTitleList;

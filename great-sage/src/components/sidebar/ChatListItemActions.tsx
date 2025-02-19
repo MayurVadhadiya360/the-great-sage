@@ -12,8 +12,8 @@ interface ChatListItemActionsProps {
 const ChatListItemActions: React.FC<ChatListItemActionsProps> = ({
     chatId,
     positionXY = { x: 0, y: 0 },
-    onEdit = () => {},
-    onDelete = () => {},
+    onEdit = () => { },
+    onDelete = () => { },
 }) => {
     return (
         <div
@@ -22,7 +22,7 @@ const ChatListItemActions: React.FC<ChatListItemActionsProps> = ({
                 position: 'fixed',
                 left: positionXY.x,
                 top: positionXY.y,
-                zIndex: 10,
+                zIndex: 15,
             }}
         >
             <button
@@ -50,4 +50,4 @@ const ChatListItemActions: React.FC<ChatListItemActionsProps> = ({
     );
 };
 
-export { ChatListItemActions };
+export default ChatListItemActions ;

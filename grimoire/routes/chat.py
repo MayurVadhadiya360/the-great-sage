@@ -1,36 +1,36 @@
-from fastapi import APIRouter
-from groq import Groq
-from dotenv import load_dotenv
+from fastapi import APIRouter, Request, Response, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from .request_models import *
-import os
-load_dotenv()
-API_KEY = os.getenv("API_KEY")
+from utils.gpt_ai_models import get_assistant_response, get_provider_models_list
 
 chatRouter = APIRouter()
 
-@chatRouter.post("/free-chat")
-def freeChat(requestData:freeChatRequest):
-    print(requestData.message)
-    client = Groq(api_key=API_KEY)
-    completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {
-                'role': 'user',
-                'content': requestData.message
-            }
-        ],
-        temperature=1,
-        max_completion_tokens=1024,
-        top_p=1,
-        stream=True,
-        stop=None,
-    )
+@chatRouter.get("/get-models-list")
+def get_models_list():
+    return get_provider_models_list()
 
-    chatResponse = ''.join([chunk.choices[0].delta.content or "" for chunk in completion])
-    print(chatResponse)
-    # for chunk in completion:
-    #     print(chunk.choices)
-    #     print(chunk.choices[0].delta.content or "", end="")
+@chatRouter.post("/unsigned-chat")
+def freeChat(response:Response, requestData:freeChatRequest):
+    print(requestData.message)
+    context = [
+        *requestData.context,
+        {
+            'role': 'user',
+            'content': requestData.message
+        }
+    ]
+
+    chatResponse = get_assistant_response(model_name=requestData.model, context=context)
     
-    return {"message": "Chat started", "response":chatResponse}
+    print(chatResponse)
+    return JSONResponse(
+        content={
+            "status": "success",
+            "message": "Chat started", 
+            "data": {
+                "response": chatResponse
+            }
+        }
+    )
+    
+

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import threeDotsIcon from '../../icons/3-dots-icon.svg';
-import { ChatListItemActions } from './ChatListItemActions';
+import ChatListItemActions from './ChatListItemActions';
+import Tooltip from '../utils/Tooltip';
 
 interface ChatTitleListItemProps {
     chatId: number;
@@ -15,7 +16,7 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     chatId,
     chatTitle,
     active = false,
-    onClick = () => {},
+    onClick = () => { },
     updateChatTitle,
     deleteChat,
 }) => {
@@ -57,19 +58,13 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     }, []);
 
     return (
-        <div ref={menuRef} className={`chat-title-list-item ${active ? 'active' : ''}`}>
+        <div ref={menuRef} className={`chat-title-list-item ${active ? 'active' : ''}`} onClick={(e) => onClick()}>
             {chatTitleEditing ? (
                 <input
                     type="text"
                     name={`chat-${chatId}-title`}
                     id={`chat-${chatId}-title`}
-                    style={{
-                        backgroundColor: 'transparent',
-                        color: 'white',
-                        fontSize: '20px',
-                        width: '80%',
-                        border: 'none',
-                    }}
+                    className='chat-title-list-item-edit'
                     defaultValue={tempChatTitle}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -78,9 +73,11 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
                     }}
                 />
             ) : (
-                <span style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                    {tempChatTitle}
-                </span>
+                <Tooltip text={tempChatTitle}>
+                    <span>
+                        {tempChatTitle}
+                    </span>
+                </Tooltip>
             )}
 
             <img
@@ -89,7 +86,7 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
                 style={{ cursor: 'pointer' }}
                 onClick={(e) => {
                     if (!showChatActions) {
-                        setPositionXY({ x: e.clientX, y: e.clientY });
+                        setPositionXY({ x: e.clientX + 10, y: e.clientY + 10 });
                     }
                     setShowChatActions((prev) => !prev);
                 }}
@@ -107,4 +104,4 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     );
 };
 
-export { ChatTitleListItem };
+export default ChatTitleListItem;

@@ -1,49 +1,146 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
-import Sidebar from './components/Sidebar';
-import { SidebarMenuIcon } from './components/sidebar_comps/SidebarMenuIcon';
-import { ChatGround } from './components/ChatGround';
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route
+} from "react-router-dom";
+import ChatApp from './components/ChatApp';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import Account from './components/Account';
+
+export const API_URL = 'http://192.168.1.44:8000';
+
+export enum APIRoutes {
+    LOGIN = '/login',
+    SIGNUP = '/register',
+    LOGOUT = '/logout',
+    PROFILE = '/user-profile',
+
+    GET_MODELS = '/get-models-list',
+    CHAT = '/chat',
+    UNSIGNED_CHAT = '/unsigned-chat'
+}
+
+export enum AppRoutes {
+    HOME = "/",
+    LOGIN = "/login",
+    SIGNUP = "/signup",
+    ACCOUNT = "/account",
+    CHAT = "/chat",
+};
+
+type UserProfile = {
+    _id: string;
+    username: string;
+    email: string;
+};
+
+type LLM_Model = {
+    provider: string;
+    models: string[];
+};
+
+interface AppContextProps {
+    userProfile: UserProfile | null;
+    getUserProfile: () => Promise<void>;
+    logOut: () => Promise<void>;
+    llmModels: LLM_Model[];
+}
+
+const AppContext = React.createContext<AppContextProps | undefined>(undefined);
+
+// Custom Hook for using AppContext
+export const useAppContext = () => {
+    const context = React.useContext(AppContext);
+    if (!context) {
+        throw new Error("useAppContext must be used within AppContextProvider");
+    }
+    return context;
+};
 
 const App: React.FC = () => {
-  const [sidebarVisible, setSidebarVisible] = useState<boolean>(true);
+    const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+    const [llmModels, setLlmModels] = React.useState<LLM_Model[]>([]);
 
-  return (
-    <div
-      style={{
-        backgroundColor: 'black',
-        color: 'white',
-        width: '100vw',
-        height: '100vh',
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'row',
-      }}
-    >
-      {/* Visible when sidebar is hidden */}
-      {!sidebarVisible && (
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 1,
-            top: '16px',
-            left: '16px',
-          }}
-        >
-          <SidebarMenuIcon
-            sidebarVisible={sidebarVisible}
-            setSidebarVisible={setSidebarVisible}
-          />
-        </div>
-      )}
-      {sidebarVisible && (
-        <Sidebar
-          sidebarVisible={sidebarVisible}
-          setSidebarVisible={setSidebarVisible}
-        />
-      )}
-      <ChatGround />
-    </div>
-  );
+    const getModels = async () => {
+        const response = await fetch(`${API_URL}${APIRoutes.GET_MODELS}`);
+        const data = await response.json();
+        setLlmModels(data);
+    };
+
+    const getUserProfile = async () => {
+        const response = await fetch(`${API_URL}${APIRoutes.PROFILE}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        if (response.ok) {
+            setUserProfile({
+                _id: data.data._id,
+                username: data.data.username,
+                email: data.data.email,
+            });
+        }
+        else {
+            setUserProfile(null);
+            console.error(data);
+        }
+    }
+
+    const logOut = async () => {
+        const response = await fetch(`${API_URL}${APIRoutes.LOGOUT}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log(data);
+            setUserProfile(null);
+        }
+        else {
+            console.error(data);
+        }
+    }
+
+    const initLoad = async () => {
+        await getModels();
+        await getUserProfile();
+    }
+
+    React.useEffect(() => {
+        initLoad();
+    }, []);
+
+    React.useEffect(() => {
+        console.log('Updated llmModels:', llmModels);
+    }, [llmModels]);
+
+    return (
+        <>
+            <AppContext.Provider value={{ userProfile, getUserProfile, logOut, llmModels }}>
+                <Router>
+                    <Routes>
+                        <Route path={AppRoutes.HOME} element={<ChatApp />} />
+                        <Route path={AppRoutes.LOGIN} element={<Login />} />
+                        <Route path={AppRoutes.SIGNUP} element={<SignUp />} />
+
+                        {userProfile &&
+                            <Route path={AppRoutes.ACCOUNT} element={<Account />} />
+                        }
+                    </Routes>
+                </Router>
+            </AppContext.Provider>
+        </>
+    );
 };
 
 export default App;
