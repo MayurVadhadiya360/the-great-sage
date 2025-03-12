@@ -4,7 +4,7 @@ import '../css/auth.css';
 import mailIcon from '../icons/mail_light.svg';
 import lockIcon from '../icons/lock_light.svg';
 import userIcon from '../icons/user_light.svg';
-import { API_URL, APIRoutes, AppRoutes, useAppContext } from '../App';
+import { APIRoutes, AppRoutes, useAppContext } from '../App';
 import TextInputField, { InputType } from './auth/TextInputField';
 
 
@@ -20,7 +20,7 @@ const SignUp: React.FC = () => {
         console.log(username, email, password);
         console.log('sign up');
 
-        const response = await fetch(API_URL + APIRoutes.SIGNUP, {
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.SIGNUP}`, {
             method: 'POST',
             credentials: 'include',
             headers: {

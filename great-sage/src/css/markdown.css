@@ -1,0 +1,16 @@
+/* Custom styles for code blocks */
+pre[class*="language-"],
+code[class*="language-"] {
+    display: block;
+    background: #2d2d2d;
+    padding: 1em;
+    border-radius: 5px;
+    overflow: auto;
+}
+
+/* Optional: Style for inline code */
+:not(pre) > code[class*="language-"] {
+    background: #3c3c3c;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }

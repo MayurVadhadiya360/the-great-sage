@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import '../css/auth.css';
 import mailIcon from '../icons/mail_light.svg';
 import lockIcon from '../icons/lock_light.svg';
-import { AppRoutes, API_URL, APIRoutes, useAppContext } from '../App';
+import { AppRoutes, APIRoutes, useAppContext } from '../App';
 import TextInputField, { InputType } from './auth/TextInputField';
 
 
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
         console.log(email, password);
         console.log('login');
 
-        const response = await fetch(API_URL + APIRoutes.LOGIN, {
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.LOGIN}`, {
             method: 'POST',
             credentials: 'include',
             headers: {

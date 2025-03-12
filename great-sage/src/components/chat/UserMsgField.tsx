@@ -3,6 +3,7 @@ import upArrowIcon from '../../icons/up-arrow.svg';
 import chevronUpIcon from '../../icons/chevron_up.svg';
 import chevronDownIcon from '../../icons/chevron_down.svg';
 import { useAppContext } from '../../App';
+import Tooltip from '../utils/Tooltip';
 
 type UserMsgFieldProps = {
    userMessage: string;
@@ -54,7 +55,9 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
                </div>
             }
             <div className='dropdown-button' onClick={(e) => setShowModelDropdown(prev => !prev)}>
-               <img src={showModelDropdown? chevronDownIcon : chevronUpIcon} alt='select-model' height='40px' width='40px' />
+               <Tooltip text='Select Model'>
+                  <img src={showModelDropdown ? chevronDownIcon : chevronUpIcon} alt='select-model' height='40px' width='40px' />
+               </Tooltip>
             </div>
          </div>
 
@@ -66,11 +69,20 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
             rows={1}
             value={userMessage}
             onChange={handleChange}
+            onKeyDown={(e) => {
+               if (e.key === 'Enter' && userMessage.trim() !== '') {
+                  onSubmit();
+               }
+            }}
          />
 
          <div
             className='send-button'
-            onClick={(e) => onSubmit()}
+            onClick={(e) => {
+               if (userMessage.trim() !== '') {
+                  onSubmit();
+               }
+            }}
          >
             <img src={upArrowIcon} alt='submit' height='40px' width='40px' />
          </div>

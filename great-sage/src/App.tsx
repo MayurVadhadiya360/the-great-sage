@@ -10,17 +10,20 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Account from './components/Account';
 
-export const API_URL = 'http://192.168.1.44:8000';
-
 export enum APIRoutes {
+    API_URL = 'http://localhost:8000',
+
     LOGIN = '/login',
     SIGNUP = '/register',
     LOGOUT = '/logout',
     PROFILE = '/user-profile',
 
     GET_MODELS = '/get-models-list',
+    CHAT_LIST = '/chat-list',
     CHAT = '/chat',
-    UNSIGNED_CHAT = '/unsigned-chat'
+    UNSIGNED_CHAT = '/unsigned-chat',
+    NEW_CHAT = '/new-chat',
+    GET_CHAT = '/get-chat',
 }
 
 export enum AppRoutes {
@@ -65,13 +68,13 @@ const App: React.FC = () => {
     const [llmModels, setLlmModels] = React.useState<LLM_Model[]>([]);
 
     const getModels = async () => {
-        const response = await fetch(`${API_URL}${APIRoutes.GET_MODELS}`);
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.GET_MODELS}`);
         const data = await response.json();
         setLlmModels(data);
     };
 
     const getUserProfile = async () => {
-        const response = await fetch(`${API_URL}${APIRoutes.PROFILE}`, {
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.PROFILE}`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -93,7 +96,7 @@ const App: React.FC = () => {
     }
 
     const logOut = async () => {
-        const response = await fetch(`${API_URL}${APIRoutes.LOGOUT}`, {
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.LOGOUT}`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -124,6 +127,10 @@ const App: React.FC = () => {
         console.log('Updated llmModels:', llmModels);
     }, [llmModels]);
 
+    React.useEffect(() => {
+        console.log('User Profile:', userProfile);
+    }, [userProfile]);
+
     return (
         <>
             <AppContext.Provider value={{ userProfile, getUserProfile, logOut, llmModels }}>
@@ -134,7 +141,10 @@ const App: React.FC = () => {
                         <Route path={AppRoutes.SIGNUP} element={<SignUp />} />
 
                         {userProfile &&
-                            <Route path={AppRoutes.ACCOUNT} element={<Account />} />
+                            <>
+                                <Route path={AppRoutes.ACCOUNT} element={<Account />} />
+                                <Route path={`${AppRoutes.CHAT}/:chatId`} element={<ChatApp />} />
+                            </>
                         }
                     </Routes>
                 </Router>

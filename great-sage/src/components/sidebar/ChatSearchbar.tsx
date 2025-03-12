@@ -17,6 +17,7 @@ const ChatSearchbar: React.FC<ChatSearchbarProps> = ({searchQuery, setSearchQuer
                 placeholder="Search chat"
                 className="chat-search"
                 value={searchQuery}
+                autoComplete="off"
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
         </div>

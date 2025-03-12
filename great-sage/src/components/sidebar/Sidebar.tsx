@@ -19,11 +19,11 @@ import { AppRoutes, useAppContext } from '../../App';
 interface SidebarProps {
     sidebarVisible: boolean;
     setSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    activeChatId: string | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarVisible, setSidebarVisible }) => {
+const Sidebar: React.FC<SidebarProps> = ({ sidebarVisible, setSidebarVisible, activeChatId }) => {
     const navigate = useNavigate();
-
     const { logOut, userProfile } = useAppContext();
     const [searchQury, setSearchQury] = React.useState<string>('');
 
@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarVisible, setSidebarVisible }) 
                 </div>
 
                 <div className='chat-title-list-scroll'>
-                    <ChatTitleList />
+                    <ChatTitleList filter={searchQury} activeChatId={activeChatId} />
                 </div>
 
                 <div className='sidebar-bottom'>

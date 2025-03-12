@@ -8,11 +8,8 @@ import ChatContainer from './ChatContainer';
 import { Chat } from '../utils/ChatAlgos';
 import { APIRoutes } from '../../App';
 
-type ChatGroundProps = {
-    chatId: string | null;
-};
 
-const ChatGround: React.FC<ChatGroundProps> = ({ chatId }) => {
+const ChatGroundUnsigned: React.FC = () => {
     const createFreeChatInstance: () => Chat = () => {
         const tempChat = new Chat("chat_id", "unsinged_user", "free_chat", null, new Date(), new Date());
         return tempChat;
@@ -109,7 +106,7 @@ const ChatGround: React.FC<ChatGroundProps> = ({ chatId }) => {
                                 className="system-msg-edit-btn"
                                 onClick={(e) => handleSystemMsgChange()}
                             >
-                                <img src={systemMsgEditing ? checkIcon : editIcon} alt='check-edit' height='20px' width='20px' />
+                                <img src={systemMsgEditing ? checkIcon : editIcon} alt='edit-check' height='20px' width='20px' />
                             </div>
                         )
                         }
@@ -164,4 +161,4 @@ const ChatGround: React.FC<ChatGroundProps> = ({ chatId }) => {
     );
 };
 
-export default ChatGround;
+export default ChatGroundUnsigned;

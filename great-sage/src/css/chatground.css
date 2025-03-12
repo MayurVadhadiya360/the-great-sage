@@ -15,6 +15,7 @@
     height: 80%;
     width: 100%;
     overflow-y: auto;
+    position: relative;
 }
 
 .chat-list {
@@ -24,6 +25,28 @@
     flex-direction: column;
     padding: 0.5rem;
     margin: .5rem;
+}
+
+.scroll-to-bottom-chat-list {
+    position: sticky;
+    bottom: 0;
+    /* right: 0; */
+    /* left: 0; */
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+}
+
+.scroll-to-bottom-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #5e5e5e;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    cursor: pointer;
+    transform: rotate(180deg);
 }
 
 @media screen and (max-width: 700px) {
@@ -172,7 +195,7 @@
 }
 
 .msg-role-assistant {
-    background-color: transparent;
+    /* background-color: transparent; */
     border-radius: 10px;
     min-height: 40px;
     width: 100%;
@@ -181,6 +204,7 @@
     align-items: center;
     margin: .5rem 0;
     padding: 0 .5rem;
+    line-height: 1.7rem;
 }
 
 .msg-role-user {

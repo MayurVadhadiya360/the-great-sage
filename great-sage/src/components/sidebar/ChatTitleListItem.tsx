@@ -4,12 +4,12 @@ import ChatListItemActions from './ChatListItemActions';
 import Tooltip from '../utils/Tooltip';
 
 interface ChatTitleListItemProps {
-    chatId: number;
+    chatId: string;
     chatTitle: string;
     active?: boolean;
     onClick?: () => void;
-    updateChatTitle: (chatId: number, chatTitle: string) => void;
-    deleteChat: (chatId: number) => void;
+    updateChatTitle: (chatId: string, chatTitle: string) => void;
+    deleteChat: (chatId: string) => void;
 }
 
 const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
