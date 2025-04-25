@@ -1,11 +1,12 @@
 from groq import Groq
-from database.db import get_database
+from database.db import Collections, get_collection
 import time
 import os
 import re
 
+
 def get_models() -> dict[str, dict[str, dict[str, float|int]]]:
-    db_col = get_database()['ModelSpec']
+    db_col = get_collection(Collections.ModelSpec)
     providers = list(db_col.find({"active": True}))
 
     model_specs = {}
@@ -15,6 +16,7 @@ def get_models() -> dict[str, dict[str, dict[str, float|int]]]:
     return model_specs
 
 MODELS_SPEC = get_models()
+
 
 def get_provider_models_list():
     provider_models: list[dict[str, str | list[str]]] = [
@@ -33,12 +35,15 @@ def get_model_spec(model_name: str) -> dict[str, float | int] | None:
 API_KEY = os.getenv("API_KEY")
 GROQ_CLIENT = Groq(api_key=API_KEY)
 
+
 def extract_think_content(text: str) -> str:
     think_content = re.findall(r"<think>(.*?)</think>", text, flags=re.DOTALL)
     return think_content[0] if think_content else "" 
 
+
 def remove_think_tags(text: str) -> str:
     return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+
 
 def get_assistant_response(model_name:str, context:list[dict] = []) -> tuple[str, int]:
     model_spec = get_model_spec(model_name)
@@ -62,4 +67,5 @@ def get_assistant_response(model_name:str, context:list[dict] = []) -> tuple[str
 
     response = str(completion.choices[0].message.content)
     response = remove_think_tags(response)
+    response = response.strip()
     return response, response_time

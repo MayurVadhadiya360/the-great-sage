@@ -7,7 +7,7 @@ interface ChatTitleListItemProps {
     chatId: string;
     chatTitle: string;
     active?: boolean;
-    onClick?: () => void;
+    onClick: () => void;
     updateChatTitle: (chatId: string, chatTitle: string) => void;
     deleteChat: (chatId: string) => void;
 }
@@ -16,7 +16,7 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     chatId,
     chatTitle,
     active = false,
-    onClick = () => { },
+    onClick,
     updateChatTitle,
     deleteChat,
 }) => {
@@ -32,8 +32,8 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     };
 
     const handleEditChatTitle = (newTitle: string) => {
-        setTempChatTitle(newTitle);
         updateChatTitle(chatId, newTitle);
+        setTempChatTitle(newTitle);
         setChatTitleEditing(false);
     };
 
@@ -58,7 +58,7 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
     }, []);
 
     return (
-        <div ref={menuRef} className={`chat-title-list-item ${active ? 'active' : ''}`} onClick={(e) => onClick()}>
+        <div ref={menuRef} className={`chat-title-list-item ${active ? 'active' : ''}`}>
             {chatTitleEditing ? (
                 <input
                     type="text"
@@ -74,7 +74,7 @@ const ChatTitleListItem: React.FC<ChatTitleListItemProps> = ({
                 />
             ) : (
                 <Tooltip text={tempChatTitle}>
-                    <span>
+                    <span onClick={(e) => onClick()}>
                         {tempChatTitle}
                     </span>
                 </Tooltip>

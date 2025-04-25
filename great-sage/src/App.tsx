@@ -3,27 +3,33 @@ import './App.css';
 import {
     BrowserRouter as Router,
     Routes,
-    Route
+    Route,
+    Navigate
 } from "react-router-dom";
 import ChatApp from './components/ChatApp';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Account from './components/Account';
+import { ChatList } from './components/utils/ChatAlgos';
 
 export enum APIRoutes {
-    API_URL = 'http://localhost:8000',
+    API_URL = '',
 
     LOGIN = '/login',
     SIGNUP = '/register',
     LOGOUT = '/logout',
     PROFILE = '/user-profile',
+    DELETE_ACCOUNT = '/delete-account',
 
     GET_MODELS = '/get-models-list',
     CHAT_LIST = '/chat-list',
     CHAT = '/chat',
-    UNSIGNED_CHAT = '/unsigned-chat',
+    ANONYMOUS_CHAT = '/anonymous-chat',
+    SIGNED_CHAT = '/signed-chat',
     NEW_CHAT = '/new-chat',
     GET_CHAT = '/get-chat',
+    UPDATE_CHAT_TITLE = '/update-chat-title',
+    DELETE_CHAT = '/delete-chat',
 }
 
 export enum AppRoutes {
@@ -34,7 +40,7 @@ export enum AppRoutes {
     CHAT = "/chat",
 };
 
-type UserProfile = {
+export type UserProfile = {
     _id: string;
     username: string;
     email: string;
@@ -50,6 +56,8 @@ interface AppContextProps {
     getUserProfile: () => Promise<void>;
     logOut: () => Promise<void>;
     llmModels: LLM_Model[];
+    chatList: ChatList;
+    setChatlist: React.Dispatch<React.SetStateAction<ChatList>>;
 }
 
 const AppContext = React.createContext<AppContextProps | undefined>(undefined);
@@ -66,6 +74,7 @@ export const useAppContext = () => {
 const App: React.FC = () => {
     const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
     const [llmModels, setLlmModels] = React.useState<LLM_Model[]>([]);
+    const [chatList, setChatlist] = React.useState<ChatList>(new ChatList([]));
 
     const getModels = async () => {
         const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.GET_MODELS}`);
@@ -82,7 +91,7 @@ const App: React.FC = () => {
             },
         });
         const data = await response.json();
-        if (response.ok) {
+        if (response.ok && data.status === 'success') {
             setUserProfile({
                 _id: data.data._id,
                 username: data.data.username,
@@ -91,9 +100,29 @@ const App: React.FC = () => {
         }
         else {
             setUserProfile(null);
-            console.error(data);
+            console.error(APIRoutes.PROFILE, data);
         }
     }
+
+
+    const getChatList = async () => {
+        // fetch chat list from server
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.CHAT_LIST}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+            let chatlist_data = data.data.chat_list;
+            setChatlist(new ChatList(chatlist_data));
+        } else {
+            console.error(APIRoutes.CHAT_LIST, data);
+        }
+    };
 
     const logOut = async () => {
         const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.LOGOUT}`, {
@@ -106,34 +135,27 @@ const App: React.FC = () => {
 
         const data = await response.json();
         if (response.ok) {
-            console.log(data);
             setUserProfile(null);
         }
         else {
-            console.error(data);
+            console.error(APIRoutes.LOGOUT, data);
         }
     }
 
-    const initLoad = async () => {
-        await getModels();
-        await getUserProfile();
-    }
-
     React.useEffect(() => {
-        initLoad();
+        getModels();
+        getUserProfile();
     }, []);
 
     React.useEffect(() => {
-        console.log('Updated llmModels:', llmModels);
-    }, [llmModels]);
-
-    React.useEffect(() => {
-        console.log('User Profile:', userProfile);
+        if (userProfile) {
+            getChatList();
+        }
     }, [userProfile]);
 
     return (
         <>
-            <AppContext.Provider value={{ userProfile, getUserProfile, logOut, llmModels }}>
+            <AppContext.Provider value={{ userProfile, getUserProfile, logOut, llmModels, chatList, setChatlist }}>
                 <Router>
                     <Routes>
                         <Route path={AppRoutes.HOME} element={<ChatApp />} />
@@ -142,10 +164,15 @@ const App: React.FC = () => {
 
                         {userProfile &&
                             <>
-                                <Route path={AppRoutes.ACCOUNT} element={<Account />} />
+                                <Route path={AppRoutes.ACCOUNT} element={<Account setUserProfile={setUserProfile} />} />
                                 <Route path={`${AppRoutes.CHAT}/:chatId`} element={<ChatApp />} />
                             </>
                         }
+                        {/* Redirect to Home if no route matches */}
+                        <Route path="*" element={<Navigate to={AppRoutes.HOME} replace />} />
+
+                        {/* OR Show a custom 404 page */}
+                        {/* <Route path="*" element={<NotFoundPage />} /> */}
                     </Routes>
                 </Router>
             </AppContext.Provider>

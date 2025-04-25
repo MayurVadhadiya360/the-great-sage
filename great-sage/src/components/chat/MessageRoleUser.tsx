@@ -8,9 +8,9 @@ const MessageRoleUser: React.FC<MessageRoleUserProps> = ({ message }) => {
     return (
         <>
             <div className='msg-role-user'>
-                <p>
+                <pre>
                     {message}
-                </p>
+                </pre>
             </div>
         </>
     );

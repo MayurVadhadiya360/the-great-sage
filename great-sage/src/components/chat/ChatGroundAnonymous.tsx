@@ -9,7 +9,7 @@ import { Chat } from '../utils/ChatAlgos';
 import { APIRoutes } from '../../App';
 
 
-const ChatGroundUnsigned: React.FC = () => {
+const ChatGroundAnonymous: React.FC = () => {
     const createFreeChatInstance: () => Chat = () => {
         const tempChat = new Chat("chat_id", "unsinged_user", "free_chat", null, new Date(), new Date());
         return tempChat;
@@ -20,17 +20,25 @@ const ChatGroundUnsigned: React.FC = () => {
     const [systemMsg, setSystemMsg] = React.useState<string>("");
     const [systemMsgEditing, setSystemMsgEditing] = React.useState<boolean>(false);
     const [chat, setChat] = React.useState<Chat>(() => createFreeChatInstance());
-
     const [showScrollButton, setShowScrollButton] = React.useState<boolean>(false);
+    const [isResponseLoading, setIsResponseLoading] = React.useState<boolean>(false);
+    const [responseLoadingUserMsg, setResponseLoadingUserMsg] = React.useState<string>("");
+
+    const updateResponseLoadingStatus = (isLoading: boolean, loadingUserMsg: string) => {
+        setIsResponseLoading(isLoading);
+        setResponseLoadingUserMsg(loadingUserMsg);
+    };
 
     const handleSubmit = async () => {
+        updateResponseLoadingStatus(true, userMessage.trim());
+
         if (chat.isEmpty()) {
             chat.updateSystemMsg(systemMsg);
         }
 
         let chatContext: { role: string, content: string }[] = chat.getChatContext();
 
-        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.UNSIGNED_CHAT}`, {
+        const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.ANONYMOUS_CHAT}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +51,8 @@ const ChatGroundUnsigned: React.FC = () => {
         });
 
         const data = await response.json();
-        if (response.ok) {
+        updateResponseLoadingStatus(false, "");
+        if (response.ok && data.status === 'success') {
             const _id = data.data._id;
             const resMsg = data.data.response;
             const resTime = data.data.response_time;
@@ -57,7 +66,7 @@ const ChatGroundUnsigned: React.FC = () => {
             });
         }
         else {
-            console.error(APIRoutes.UNSIGNED_CHAT, data);
+            console.error(APIRoutes.ANONYMOUS_CHAT, data);
         }
 
         scrollToBottonChatList()
@@ -81,12 +90,13 @@ const ChatGroundUnsigned: React.FC = () => {
 
     React.useEffect(() => {
         const chatList = document.getElementById("chat-list");
+        const scrollBtnOffset = 200;
 
         const handleScroll = () => {
             if (!chatList) return;
 
             // Check if scrolled to bottom
-            const isAtBottom = chatList.scrollHeight - chatList.scrollTop <= chatList.clientHeight + 1;
+            const isAtBottom = chatList.scrollHeight - chatList.scrollTop - scrollBtnOffset <= chatList.clientHeight + 1;
             setShowScrollButton(!isAtBottom);
         };
 
@@ -134,7 +144,7 @@ const ChatGroundUnsigned: React.FC = () => {
 
             <div className="chat-ground" id="chat-list">
                 <div className="chat-list" >
-                    <ChatContainer chat={chat} />
+                    <ChatContainer chat={chat} loadingResponse={isResponseLoading} loadingUserMsg={responseLoadingUserMsg} />
                 </div>
                 {showScrollButton &&
                     <div className='scroll-to-bottom-chat-list'>
@@ -151,7 +161,6 @@ const ChatGroundUnsigned: React.FC = () => {
                     currentModel={currentModel}
                     setCurrentModel={setCurrentModel}
                     onSubmit={() => {
-                        console.log("submit", userMessage);
                         setUserMessage("");
                         handleSubmit();
                     }}
@@ -161,4 +170,4 @@ const ChatGroundUnsigned: React.FC = () => {
     );
 };
 
-export default ChatGroundUnsigned;
+export default ChatGroundAnonymous;

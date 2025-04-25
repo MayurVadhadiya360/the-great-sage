@@ -91,6 +91,23 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.back-to-home {
+    position: absolute;
+    left: 0;
+    top: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #5e5e5e;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    cursor: pointer;
+    transform: rotate(-90deg);
 }
 
 .profile-field {
@@ -134,6 +151,7 @@
     border: none;
     border-radius: 10px;
     margin-top: 1rem;
+    cursor: pointer;
 }
 
 .account-delete-btn:hover {

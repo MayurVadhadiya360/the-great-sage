@@ -1,16 +1,17 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppContext } from '../App';
 import Sidebar from './sidebar/Sidebar';
 import SidebarMenuIcon from './sidebar/SidebarMenuIcon';
 import ChatGround from './chat/ChatGround';
-import { useAppContext } from '../App';
-import ChatGroundUnsigned from './chat/ChatGroundUnsigned';
-import { useParams } from 'react-router-dom';
+import ChatGroundAnonymous from './chat/ChatGroundAnonymous';
 import ChatGroundNewChat from './chat/ChatGroundNewChat';
 
 const ChatApp: React.FC = () => {
     let { chatId } = useParams();
-    const [sidebarVisible, setSidebarVisible] = React.useState<boolean>(true);
     const { userProfile } = useAppContext();
+    const [sidebarVisible, setSidebarVisible] = React.useState<boolean>(true);
+
     return (
         <>
             <div className='chat-app'>
@@ -29,7 +30,7 @@ const ChatApp: React.FC = () => {
                     </div>
                 }
                 {(userProfile === null) ?
-                    <ChatGroundUnsigned />
+                    <ChatGroundAnonymous />
                     :
                     (chatId) ?
                         <ChatGround chatId={chatId} />

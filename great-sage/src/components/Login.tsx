@@ -5,6 +5,7 @@ import mailIcon from '../icons/mail_light.svg';
 import lockIcon from '../icons/lock_light.svg';
 import { AppRoutes, APIRoutes, useAppContext } from '../App';
 import TextInputField, { InputType } from './auth/TextInputField';
+import Loading from './utils/Loading';
 
 
 const Login: React.FC = () => {
@@ -13,10 +14,14 @@ const Login: React.FC = () => {
     const { getUserProfile } = useAppContext();
     const [email, setEmail] = React.useState<string>('');
     const [password, setPassword] = React.useState<string>('');
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+    const updateLoadingState = (loading: boolean) => {
+        setIsLoading(loading);
+    };
 
     const handleLogin = async () => {
-        console.log(email, password);
-        console.log('login');
+        updateLoadingState(true);
 
         const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.LOGIN}`, {
             method: 'POST',
@@ -27,20 +32,22 @@ const Login: React.FC = () => {
             body: JSON.stringify({ email, password })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
+        const data = await response.json();
+        if (response.ok && data.status === 'success') {
             await getUserProfile();
+            updateLoadingState(false);
             navigate(AppRoutes.HOME);
         }
         else {
-            const data = await response.json();
-            console.warn(data);
+            updateLoadingState(false);
+            console.warn(APIRoutes.LOGIN, data);
         }
     };
 
     return (
         <>
+            {isLoading && <Loading />}
+
             <div className='auth-container'>
                 <div className='auth-form'>
 
@@ -72,10 +79,8 @@ const Login: React.FC = () => {
                         </p>
                     </div>
 
-
                 </div>
             </div>
-
         </>
     );
 };

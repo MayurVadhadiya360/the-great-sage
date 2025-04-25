@@ -10,8 +10,8 @@ class UserLogin(BaseModel):
     email: EmailStr = Field(..., description="Email address of user")
     password: str = Field(..., description="Password of user", min_length=8)
 
-class freeChatRequest(BaseModel):
-    """Request model for free chat endpoint."""
+class anonymousChatRequest(BaseModel):
+    """Request model for anonymous chat endpoint."""
     model: str
     message: str
     context: list[dict[str, str]]
@@ -22,6 +22,18 @@ class newChatRequest(BaseModel):
     system_msg: str | None
     message: str
 
-class getChatRequest(BaseModel):
-    """Request model for get chat endpoint."""
+class chatIdDataRequest(BaseModel):
     chat_id: str
+
+class signedChatRequest(BaseModel):
+    """Request model for signed chat endpoint."""
+    chat_id: str
+    message: str
+    model: str
+    context: list[dict[str, str]]
+    parent_chat_node_id: str
+
+class updateChatTitleRequest(BaseModel):
+    """Request model for update chat title endpoint."""
+    chat_id: str
+    chat_title: str

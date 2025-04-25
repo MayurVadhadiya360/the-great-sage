@@ -6,6 +6,7 @@ import lockIcon from '../icons/lock_light.svg';
 import userIcon from '../icons/user_light.svg';
 import { APIRoutes, AppRoutes, useAppContext } from '../App';
 import TextInputField, { InputType } from './auth/TextInputField';
+import Loading from './utils/Loading';
 
 
 const SignUp: React.FC = () => {
@@ -15,10 +16,14 @@ const SignUp: React.FC = () => {
     const [username, setUsername] = React.useState<string>('');
     const [email, setEmail] = React.useState<string>('');
     const [password, setPassword] = React.useState<string>('');
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+    const updateLoadingState = (loading: boolean) => {
+        setIsLoading(loading);
+    };
 
     const handleSignUp = async () => {
-        console.log(username, email, password);
-        console.log('sign up');
+        updateLoadingState(true);
 
         const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.SIGNUP}`, {
             method: 'POST',
@@ -29,20 +34,22 @@ const SignUp: React.FC = () => {
             body: JSON.stringify({ username, email, password })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
+        const data = await response.json();
+        if (response.ok && data.status === 'success') {
             await getUserProfile();
+            updateLoadingState(false);
             navigate(AppRoutes.HOME);
         }
         else {
-            const data = await response.json();
-            console.warn(data);
+            updateLoadingState(false);
+            console.warn(APIRoutes.SIGNUP, data);
         }
     };
 
     return (
         <>
+            {isLoading && <Loading />}
+
             <div className='auth-container'>
                 <div className='auth-form'>
 
@@ -72,7 +79,6 @@ const SignUp: React.FC = () => {
                         placeholderText='Password'
                     />
 
-
                     <button className='form-button' onClick={(e) => handleSignUp()}>
                         Sign Up
                     </button>
@@ -84,7 +90,6 @@ const SignUp: React.FC = () => {
                     </div>
                 </div>
             </div>
-
         </>
     );
 };

@@ -39,17 +39,25 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarVisible, setSidebarVisible, ac
                     <NewChatButton disabled={!isUserLoggedIn} />
                 </div>
 
-                <div style={{ marginTop: '2rem' }}>
-                    <ChatSearchbar
-                        searchQuery={searchQury}
-                        setSearchQuery={setSearchQury}
-                    />
-                </div>
+                {
+                    (isUserLoggedIn) ?
+                        <>
+                            <div style={{ marginTop: '2rem' }}>
+                                <ChatSearchbar
+                                    searchQuery={searchQury}
+                                    setSearchQuery={setSearchQury}
+                                />
+                            </div>
 
-                <div className='chat-title-list-scroll'>
-                    <ChatTitleList filter={searchQury} activeChatId={activeChatId} />
-                </div>
-
+                            <div className='chat-title-list-scroll'>
+                                <ChatTitleList searchQuery={searchQury} activeChatId={activeChatId} />
+                            </div>
+                        </>
+                        :
+                        <div className='chat-title-list-scroll' style={{ alignItems: 'center', justifyContent: 'center', display: "flex" }}>
+                            Login to save chat history
+                        </div>
+                }
                 <div className='sidebar-bottom'>
                     {
                         isUserLoggedIn ?

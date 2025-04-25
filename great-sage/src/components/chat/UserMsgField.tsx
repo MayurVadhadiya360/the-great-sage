@@ -1,9 +1,7 @@
 import React from 'react';
 import upArrowIcon from '../../icons/up-arrow.svg';
-import chevronUpIcon from '../../icons/chevron_up.svg';
-import chevronDownIcon from '../../icons/chevron_down.svg';
+import threeDotsIcon from '../../icons/3-dots-icon-40.svg';
 import { useAppContext } from '../../App';
-import Tooltip from '../utils/Tooltip';
 
 type UserMsgFieldProps = {
    userMessage: string;
@@ -21,6 +19,13 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
       const valLinesCount = e.target.value.split('\n').length;
       if (valLinesCount < 7 && valLinesCount > 0) {
          e.target.rows = valLinesCount;
+      }
+   };
+
+   const resetTextAreaRows = () => {
+      const textArea = document.getElementById('user-message') as HTMLTextAreaElement | null;
+      if (textArea) {
+         textArea.rows = 1;
       }
    };
 
@@ -55,9 +60,7 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
                </div>
             }
             <div className='dropdown-button' onClick={(e) => setShowModelDropdown(prev => !prev)}>
-               <Tooltip text='Select Model'>
-                  <img src={showModelDropdown ? chevronDownIcon : chevronUpIcon} alt='select-model' height='40px' width='40px' />
-               </Tooltip>
+               <img src={threeDotsIcon} alt='select-model' height='40px' width='40px' />
             </div>
          </div>
 
@@ -70,8 +73,10 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
             value={userMessage}
             onChange={handleChange}
             onKeyDown={(e) => {
-               if (e.key === 'Enter' && userMessage.trim() !== '') {
+               if ((e.key === 'Enter' && userMessage.trim() !== '') && (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey)) {
+                  e.preventDefault();
                   onSubmit();
+                  resetTextAreaRows();
                }
             }}
          />
@@ -81,6 +86,7 @@ const UserMsgField: React.FC<UserMsgFieldProps> = ({ userMessage, setUserMessage
             onClick={(e) => {
                if (userMessage.trim() !== '') {
                   onSubmit();
+                  resetTextAreaRows();
                }
             }}
          >

@@ -29,7 +29,6 @@ const ChatListItemActions: React.FC<ChatListItemActionsProps> = ({
                 className='chat-action-item'
                 onClick={() => {
                     onEdit();
-                    console.log('edit');
                 }}
             >
                 <img src={editIcon} alt='edit-chat-name' height='24px' width='24px' />
@@ -40,7 +39,6 @@ const ChatListItemActions: React.FC<ChatListItemActionsProps> = ({
                 className='chat-action-item'
                 onClick={() => {
                     onDelete();
-                    console.log('delete');
                 }}
             >
                 <img src={deleteIcon} alt='delete-chat' height='24px' width='24px' />

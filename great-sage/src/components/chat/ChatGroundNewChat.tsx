@@ -1,24 +1,36 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../css/chatground.css';
 import upArrowIcon from '../../icons/up-arrow.svg';
 import editIcon from '../../icons/edit-pen.svg';
 import checkIcon from '../../icons/check.svg';
 import UserMsgField from './UserMsgField';
 import ChatContainer from './ChatContainer';
-import { APIRoutes } from '../../App';
-
+import { APIRoutes, AppRoutes, useAppContext } from '../../App';
+import { ChatList } from '../utils/ChatAlgos';
+import Loading from '../utils/Loading';
 
 
 const ChatGroundNewChat: React.FC = () => {
+    const navigate = useNavigate();
+    const { setChatlist } = useAppContext();
     const [userMessage, setUserMessage] = React.useState<string>("");
     const [currentModel, setCurrentModel] = React.useState<string>("deepseek-r1-distill-llama-70b");
     const [systemMsg, setSystemMsg] = React.useState<string>("");
     const [systemMsgEditing, setSystemMsgEditing] = React.useState<boolean>(false);
     const [showScrollButton, setShowScrollButton] = React.useState<boolean>(false);
+    const [isResponseLoading, setIsResponseLoading] = React.useState<boolean>(false);
+
+    const updateResponseLoadingStatus = (isLoading: boolean) => {
+        setIsResponseLoading(isLoading);
+    };
 
     const handleSubmit = async () => {
+        updateResponseLoadingStatus(true);
+
         const response = await fetch(`${APIRoutes.API_URL}${APIRoutes.NEW_CHAT}`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -30,11 +42,21 @@ const ChatGroundNewChat: React.FC = () => {
         });
 
         const data = await response.json();
-        if (response.ok) {
-
+        updateResponseLoadingStatus(false);
+        if (response.ok && data.status === 'success') {
+            const chat_id = data.data.chat_id;
+            const chat_title = data.data.chat_title;
+            const creation_date = data.data.creation_date;
+            const last_update = data.data.last_update;
+            setChatlist(prevChatList => {
+                prevChatList.addChatData(chat_id, chat_title, new Date(creation_date), new Date(last_update));
+                const newChatList = new ChatList(prevChatList);
+                return newChatList;
+            });
+            navigate(`${AppRoutes.CHAT}/${chat_id}`);
         }
         else {
-            console.error(APIRoutes.UNSIGNED_CHAT, data);
+            console.error(APIRoutes.NEW_CHAT, data);
         }
 
         scrollToBottonChatList();
@@ -58,12 +80,13 @@ const ChatGroundNewChat: React.FC = () => {
 
     React.useEffect(() => {
         const chatList = document.getElementById("chat-list");
+        const scrollBtnOffset = 200;
 
         const handleScroll = () => {
             if (!chatList) return;
 
             // Check if scrolled to bottom
-            const isAtBottom = chatList.scrollHeight - chatList.scrollTop <= chatList.clientHeight + 1;
+            const isAtBottom = chatList.scrollHeight - chatList.scrollTop - scrollBtnOffset <= chatList.clientHeight + 1;
             setShowScrollButton(!isAtBottom);
         };
 
@@ -74,9 +97,11 @@ const ChatGroundNewChat: React.FC = () => {
     }, []);
 
     return (
-        <div className="chat-ground-container">
-            <div className="system-msg-container">
-                {((systemMsg !== "")) &&
+        <>
+            {isResponseLoading && <Loading />}
+
+            <div className="chat-ground-container">
+                <div className="system-msg-container">
                     <div className="system-msg">
                         <div
                             className="system-msg-edit-btn"
@@ -84,7 +109,6 @@ const ChatGroundNewChat: React.FC = () => {
                         >
                             <img src={systemMsgEditing ? checkIcon : editIcon} alt='check-edit' height='20px' width='20px' />
                         </div>
-
 
                         <b>System Message: </b>
                         {systemMsgEditing ?
@@ -105,35 +129,34 @@ const ChatGroundNewChat: React.FC = () => {
                             </span>
                         }
                     </div>
-                }
-            </div>
-
-            <div className="chat-ground" id="chat-list">
-                <div className="chat-list" >
-                    <ChatContainer chat={null} />
                 </div>
-                {showScrollButton &&
-                    <div className='scroll-to-bottom-chat-list'>
-                        <div className='scroll-to-bottom-icon' onClick={() => scrollToBottonChatList()}>
-                            <img src={upArrowIcon} alt='submit' height='40px' width='40px' />
-                        </div>
+
+                <div className="chat-ground" id="chat-list">
+                    <div className="chat-list" >
+                        <ChatContainer chat={null} />
                     </div>
-                }
+                    {showScrollButton &&
+                        <div className='scroll-to-bottom-chat-list'>
+                            <div className='scroll-to-bottom-icon' onClick={() => scrollToBottonChatList()}>
+                                <img src={upArrowIcon} alt='submit' height='40px' width='40px' />
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div style={{ width: '100%', maxWidth: '50rem', margin: '1rem 0 2rem 0' }}>
+                    <UserMsgField
+                        userMessage={userMessage}
+                        setUserMessage={setUserMessage}
+                        currentModel={currentModel}
+                        setCurrentModel={setCurrentModel}
+                        onSubmit={() => {
+                            setUserMessage("");
+                            handleSubmit();
+                        }}
+                    />
+                </div>
             </div>
-            <div style={{ width: '100%', maxWidth: '50rem', margin: '1rem 0 2rem 0' }}>
-                <UserMsgField
-                    userMessage={userMessage}
-                    setUserMessage={setUserMessage}
-                    currentModel={currentModel}
-                    setCurrentModel={setCurrentModel}
-                    onSubmit={() => {
-                        console.log("submit", userMessage);
-                        setUserMessage("");
-                        handleSubmit();
-                    }}
-                />
-            </div>
-        </div>
+        </>
     );
 };
 

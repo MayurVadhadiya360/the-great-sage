@@ -6,11 +6,40 @@ code[class*="language-"] {
     padding: 1em;
     border-radius: 5px;
     overflow: auto;
+    max-width: 50rem;
 }
 
 /* Optional: Style for inline code */
-:not(pre) > code[class*="language-"] {
+:not(pre)>code[class*="language-"] {
     background: #3c3c3c;
     padding: 0.2em 0.4em;
     border-radius: 3px;
-  }
+}
+
+/* Scollbar styles */
+/* Webkit Browsers */
+pre[class*="language-"]::-webkit-scrollbar,
+code[class*="language-"]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-track,
+code[class*="language-"]::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb,
+code[class*="language-"]::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+    border: 2px solid #2d2d2d;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb:hover,
+code[class*="language-"]::-webkit-scrollbar-thumb:hover {
+    background-color: #888;
+}
